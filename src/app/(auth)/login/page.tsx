@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth"
 import Link from "next/link"
 import { auth } from "@/lib/firebase"
+import { storeDeviceForUser } from "@/lib/device"
 import { AuthCard } from "@/components/AuthCard"
 import { GoogleButton } from "@/components/GoogleButton"
 
@@ -20,7 +21,8 @@ export default function LoginPage() {
     setLoading(true)
     setError(null)
     try {
-      await signInWithEmailAndPassword(auth, email, password)
+      const cred = await signInWithEmailAndPassword(auth, email, password)
+      await storeDeviceForUser(cred.user.uid)
       router.push("/")
     } catch (err: any) {
       setError(err?.message ?? "Failed to sign in")

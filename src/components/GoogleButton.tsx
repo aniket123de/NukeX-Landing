@@ -2,6 +2,7 @@
 
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth"
 import { auth } from "@/lib/firebase"
+import { storeDeviceForUser } from "@/lib/device"
 
 type Props = {
   onSuccess?: () => void
@@ -14,7 +15,8 @@ export function GoogleButton({ onSuccess, onError, label = "Continue with Google
   async function onClick() {
     try {
       const provider = new GoogleAuthProvider()
-      await signInWithPopup(auth, provider)
+      const cred = await signInWithPopup(auth, provider)
+      await storeDeviceForUser(cred.user.uid)
       onSuccess?.()
     } catch (e: any) {
       onError?.(e?.message ?? "Google sign-in failed")

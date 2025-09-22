@@ -3,6 +3,7 @@
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app"
 import { getAuth, type Auth } from "firebase/auth"
 import { getAnalytics, isSupported, type Analytics } from "firebase/analytics"
+import { getFirestore, type Firestore } from "firebase/firestore"
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -18,6 +19,7 @@ const firebaseConfig = {
 let app: FirebaseApp
 let auth: Auth
 let analytics: Analytics | undefined
+let db: Firestore
 
 if (!getApps().length) {
   app = initializeApp(firebaseConfig)
@@ -26,6 +28,7 @@ if (!getApps().length) {
 }
 
 auth = getAuth(app)
+db = getFirestore(app)
 
 // Analytics must only initialize in the browser and when supported
 if (typeof window !== "undefined") {
@@ -36,6 +39,6 @@ if (typeof window !== "undefined") {
   })
 }
 
-export { app, auth, analytics }
+export { app, auth, analytics, db }
 
 
