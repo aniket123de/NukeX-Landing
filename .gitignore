@@ -1,3 +1,10 @@
+.env
+.env.local
+.env.*.local
+nukex-8c186-firebase-adminsdk-fbsvc-82ab773c3a.json
+.next/
+out/
+node_modules/
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies

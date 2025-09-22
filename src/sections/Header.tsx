@@ -74,6 +74,7 @@ export const Header = () => {
           <div className="flex gap-4 items-center">
             {userLabel ? (
               <div className="hidden md:flex items-center gap-2 border rounded-lg border-white/20 py-2 px-3 text-sm text-white/90">
+                <Link href="/2fa" className="rounded-md px-2 py-1 text-xs bg-white/10 hover:bg-white/20 transition">2FA</Link>
                 <span className="truncate max-w-[12rem]" title={userLabel}>{userLabel}</span>
                 <button
                   onClick={handleSignOut}
@@ -117,7 +118,10 @@ export const Header = () => {
             <div className="h-3" />
             {userLabel ? (
               <div className="flex items-center justify-between border rounded-lg border-white/20 py-2 px-3 text-sm text-white/90">
-                <span className="truncate max-w-[12rem]" title={userLabel}>{userLabel}</span>
+                <div className="flex items-center gap-2">
+                  <Link href="/2fa" onClick={() => setMobileOpen(false)} className="rounded-md px-2 py-1 text-xs bg-white/10 hover:bg-white/20 transition">2FA</Link>
+                  <span className="truncate max-w-[12rem]" title={userLabel}>{userLabel}</span>
+                </div>
                 <button
                   onClick={() => { setMobileOpen(false); void handleSignOut(); }}
                   className="ml-2 rounded-md px-3 py-1 text-xs bg-white/10 hover:bg-white/20 transition"
