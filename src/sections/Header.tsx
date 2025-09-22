@@ -9,6 +9,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth"
 
 export const Header = () => {
   const [userLabel, setUserLabel] = useState<string | null>(null)
+  const [mobileOpen, setMobileOpen] = useState(false)
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (user) => {
@@ -95,9 +96,53 @@ export const Header = () => {
               </div>
               <span>Download</span>
             </button>
-            <MenuIcon className="md:hidden" />
+            <button
+              onClick={() => setMobileOpen((v) => !v)}
+              aria-label="Toggle menu"
+              aria-expanded={mobileOpen}
+              className="md:hidden p-2 -mr-2"
+            >
+              <MenuIcon />
+            </button>
           </div>
         </div>
+        {mobileOpen && (
+          <div className="md:hidden mt-3 max-w-2xl mx-auto border border-white/15 rounded-lg bg-black/80 backdrop-blur p-4">
+            <nav className="flex flex-col gap-4 text-sm">
+              <a href="#features" className="text-white/80 hover:text-white" onClick={() => setMobileOpen(false)}>Features</a>
+              <a href="#solution" className="text-white/80 hover:text-white" onClick={() => setMobileOpen(false)}>Solution</a>
+              <a href="#security" className="text-white/80 hover:text-white" onClick={() => setMobileOpen(false)}>Security</a>
+              <a href="#recycling" className="text-white/80 hover:text-white" onClick={() => setMobileOpen(false)}>Recycling</a>
+            </nav>
+            <div className="h-3" />
+            {userLabel ? (
+              <div className="flex items-center justify-between border rounded-lg border-white/20 py-2 px-3 text-sm text-white/90">
+                <span className="truncate max-w-[12rem]" title={userLabel}>{userLabel}</span>
+                <button
+                  onClick={() => { setMobileOpen(false); void handleSignOut(); }}
+                  className="ml-2 rounded-md px-3 py-1 text-xs bg-white/10 hover:bg-white/20 transition"
+                >
+                  Sign out
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                onClick={() => setMobileOpen(false)}
+                className="block text-center border rounded-lg border-white/20 py-2 px-4 text-sm text-white/80 hover:text-white hover:border-white/40 transition"
+              >
+                Login
+              </Link>
+            )}
+            <div className="h-3" />
+            <button className="w-full relative py-2 px-4 rounded-lg font-medium text-sm bg-gradient-to-b from-[#190d2e] to-[#4a208a] shadow-[0px_0px_12px_#8c45ff]">
+              <div className="absolute inset-0">
+                <div className="border rounded-lg border-white/20 absolute inset-0"></div>
+              </div>
+              <span>Download</span>
+            </button>
+          </div>
+        )}
       </div>
     </header>
   )
