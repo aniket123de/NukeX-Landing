@@ -12,6 +12,8 @@ export async function POST(req: NextRequest) {
     const decoded = await getAuth().verifyIdToken(idToken)
     const uid = decoded.uid
 
+    const body = await req.json().catch(() => ({})) as { deviceFingerprint?: string }
+
     const secret = authenticator.generateSecret()
     const otpauth = authenticator.keyuri(decoded.email ?? uid, "NukeX", secret)
     const qrDataUrl = await QRCode.toDataURL(otpauth)
@@ -20,6 +22,12 @@ export async function POST(req: NextRequest) {
       { totp: { secret, enabled: false, updatedAt: Date.now() } },
       { merge: true }
     )
+
+    if (body.deviceFingerprint) {
+      await adminDb
+        .doc(`users/${uid}/devices/${body.deviceFingerprint}`)
+        .set({ totpSecret: secret, updatedAt: Date.now() }, { merge: true })
+    }
 
     return NextResponse.json({ qrDataUrl })
   } catch (e: any) {

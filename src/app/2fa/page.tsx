@@ -35,9 +35,11 @@ export default function TwoFAPage() {
     setEnrolling(true)
     try {
       const token = await user.getIdToken()
+      const fingerprint = `${navigator.vendor || ""}` // simple id to link device doc if available
       const res = await fetch("/api/totp/enroll", {
         method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ deviceFingerprint: fingerprint }),
       })
       if (!res.ok) throw new Error((await res.json()).error || "Failed to enroll")
       const data = await res.json()
