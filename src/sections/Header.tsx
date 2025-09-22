@@ -4,20 +4,30 @@ import { useEffect, useState } from "react"
 import LogoIcon from "@/assets/logo.svg"
 import MenuIcon from "@/assets/icon-menu.svg"
 import Link from "next/link"
-import { auth } from "@/lib/firebase"
+import { auth, db } from "@/lib/firebase"
 import { onAuthStateChanged, signOut } from "firebase/auth"
+import { doc, getDoc } from "firebase/firestore"
 
 export const Header = () => {
   const [userLabel, setUserLabel] = useState<string | null>(null)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [totpEnabled, setTotpEnabled] = useState(false)
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (user) => {
+    const unsub = onAuthStateChanged(auth, async (user) => {
       if (user) {
         const label = user.displayName || user.email || "Account"
         setUserLabel(label)
+        try {
+          const snap = await getDoc(doc(db, "users", user.uid))
+          const enabled = Boolean(snap.get("totp.enabled"))
+          setTotpEnabled(enabled)
+        } catch {
+          setTotpEnabled(false)
+        }
       } else {
         setUserLabel(null)
+        setTotpEnabled(false)
       }
     })
     return () => unsub()
@@ -74,7 +84,17 @@ export const Header = () => {
           <div className="flex gap-4 items-center">
             {userLabel ? (
               <div className="hidden md:flex items-center gap-2 border rounded-lg border-white/20 py-2 px-3 text-sm text-white/90">
-                <Link href="/2fa" className="rounded-md px-2 py-1 text-xs bg-white/10 hover:bg-white/20 transition">2FA</Link>
+                <Link
+                  href="/2fa"
+                  className={
+                    "rounded-md px-2 py-1 text-xs transition " +
+                    (totpEnabled
+                      ? "bg-green-500/15 text-green-400 border border-green-400/30"
+                      : "bg-white/10 hover:bg-white/20")
+                  }
+                >
+                  2FA{totpEnabled ? " ✓" : ""}
+                </Link>
                 <span className="truncate max-w-[12rem]" title={userLabel}>{userLabel}</span>
                 <button
                   onClick={handleSignOut}
@@ -119,7 +139,18 @@ export const Header = () => {
             {userLabel ? (
               <div className="flex items-center justify-between border rounded-lg border-white/20 py-2 px-3 text-sm text-white/90">
                 <div className="flex items-center gap-2">
-                  <Link href="/2fa" onClick={() => setMobileOpen(false)} className="rounded-md px-2 py-1 text-xs bg-white/10 hover:bg-white/20 transition">2FA</Link>
+                  <Link
+                    href="/2fa"
+                    onClick={() => setMobileOpen(false)}
+                    className={
+                      "rounded-md px-2 py-1 text-xs transition " +
+                      (totpEnabled
+                        ? "bg-green-500/15 text-green-400 border border-green-400/30"
+                        : "bg-white/10 hover:bg-white/20")
+                    }
+                  >
+                    2FA{totpEnabled ? " ✓" : ""}
+                  </Link>
                   <span className="truncate max-w-[12rem]" title={userLabel}>{userLabel}</span>
                 </div>
                 <button

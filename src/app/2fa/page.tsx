@@ -66,6 +66,7 @@ export default function TwoFAPage() {
       })
       if (!res.ok) throw new Error((await res.json()).error || "Verification failed")
       setEnrolled(true)
+      router.push("/")
     } catch (e: any) {
       setError(e?.message ?? "Failed to verify code")
     } finally {
