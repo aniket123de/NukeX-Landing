@@ -1,7 +1,35 @@
+"use client"
+
+import { useEffect, useState } from "react"
 import LogoIcon from "@/assets/logo.svg"
 import MenuIcon from "@/assets/icon-menu.svg"
+import Link from "next/link"
+import { auth } from "@/lib/firebase"
+import { onAuthStateChanged, signOut } from "firebase/auth"
 
 export const Header = () => {
+  const [userLabel, setUserLabel] = useState<string | null>(null)
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const label = user.displayName || user.email || "Account"
+        setUserLabel(label)
+      } else {
+        setUserLabel(null)
+      }
+    })
+    return () => unsub()
+  }, [])
+
+  async function handleSignOut() {
+    try {
+      await signOut(auth)
+    } catch (e) {
+      // no-op UI for now
+    }
+  }
+
   return (
     <header className="py-4 border-b border-white/15 md:border-none sticky top-0 z-10 ">
       <div className="absolute inset-0 backdrop-blur -z-10 md:hidden"></div>
@@ -43,6 +71,24 @@ export const Header = () => {
             </nav>
           </div>
           <div className="flex gap-4 items-center">
+            {userLabel ? (
+              <div className="hidden md:flex items-center gap-2 border rounded-lg border-white/20 py-2 px-3 text-sm text-white/90">
+                <span className="truncate max-w-[12rem]" title={userLabel}>{userLabel}</span>
+                <button
+                  onClick={handleSignOut}
+                  className="ml-2 rounded-md px-2 py-1 text-xs bg-white/10 hover:bg-white/20 transition"
+                >
+                  Sign out
+                </button>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="hidden md:block border rounded-lg border-white/20 py-2 px-4 text-sm text-white/80 hover:text-white hover:border-white/40 transition"
+              >
+                Login
+              </Link>
+            )}
             <button className="relative py-2 px-4 rounded-lg font-medium text-sm bg-gradient-to-b from-[#190d2e] to-[#4a208a] shadow-[0px_0px_12px_#8c45ff] hidden md:block">
               <div className="absolute inset-0">
                 <div className="border rounded-lg border-white/20 absolute inset-0"></div>
