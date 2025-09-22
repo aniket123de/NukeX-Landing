@@ -34,7 +34,7 @@ export const Innovation = () => {
             Innovation & Uniqueness
           </h2>
           <p className="text-white/70 text-lg md:text-xl max-w-3xl mx-auto">
-            Revolutionary approach to e-waste data security that addresses India's 
+            Revolutionary approach to e-waste data security that addresses India&apos;s 
             1.75M+ tonnes of yearly e-waste with blockchain-verified compliance.
           </p>
         </div>

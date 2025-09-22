@@ -138,7 +138,7 @@ export const Hero = () => {
           NukeX
         </h1>
         <p className="text-center mt-6 text-lg md:text-xl lg:text-2xl text-white/60 max-w-3xl mx-auto">
-          India's first blockchain-backed data wiping solution. Secure, verifiable, 
+          India&apos;s first blockchain-backed data wiping solution. Secure, verifiable, 
           and tamper-proof data erasure for e-waste recycling. Supporting circular 
           economy with NIST SP 800-88 compliant standards.
         </p>

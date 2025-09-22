@@ -49,7 +49,7 @@ export const Solution = () => {
           </h2>
           <p className="text-white/70 text-lg md:text-xl max-w-3xl mx-auto">
             A comprehensive solution that addresses every aspect of secure data erasure, 
-            from execution to verification, built for India's e-waste ecosystem.
+            from execution to verification, built for India&apos;s e-waste ecosystem.
           </p>
         </div>
 

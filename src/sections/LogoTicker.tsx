@@ -6,6 +6,7 @@ import echoLogo from "@/assets/logo-echo.png"
 import pulseLogo from "@/assets/logo-pulse.png"
 import quantumLogo from "@/assets/logo-quantum.png"
 import celestialLogo from "@/assets/logo-celestial.png"
+import Image from "next/image"
 
 import { motion } from "framer-motion"
 
@@ -46,11 +47,13 @@ export const LogoTicker = () => {
               className="flex flex-none gap-14 pr-14 -translate-x-1/2"
             >
               {logos.map((logo, index) => (
-                <img
+                <Image
                   key={index} // Add key prop here
-                  src={logo.src}
+                  src={logo}
                   className="h-6 w-auto"
                   alt={`Logo ${index + 1}`}
+                  height={24}
+                  width={120}
                 />
               ))}
             </motion.div>

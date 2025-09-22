@@ -80,7 +80,7 @@ const FeatureTab = (
       repeat: Infinity,
       repeatType: "loop",
     })
-  }, [props.selected])
+  }, [props.selected, xPercent, yPercent])
 
   //custom funtion to manage the animaton of icon  on hover or mouse enter
   const handleTabHover = () => {
