@@ -84,17 +84,18 @@ export const Header = () => {
           <div className="flex gap-4 items-center">
             {userLabel ? (
               <div className="hidden md:flex items-center gap-2 border rounded-lg border-white/20 py-2 px-3 text-sm text-white/90">
-                <Link
-                  href="/2fa"
-                  className={
-                    "rounded-md px-2 py-1 text-xs transition " +
-                    (totpEnabled
-                      ? "bg-green-500/15 text-green-400 border border-green-400/30"
-                      : "bg-white/10 hover:bg-white/20")
-                  }
-                >
-                  2FA{totpEnabled ? " ✓" : ""}
-                </Link>
+                {totpEnabled ? (
+                  <span className="rounded-md px-2 py-1 text-xs bg-green-500/15 text-green-400 border border-green-400/30 cursor-default select-none">
+                    2FA ✓
+                  </span>
+                ) : (
+                  <Link
+                    href="/2fa"
+                    className="rounded-md px-2 py-1 text-xs bg-white/10 hover:bg-white/20 transition"
+                  >
+                    2FA
+                  </Link>
+                )}
                 <span className="truncate max-w-[12rem]" title={userLabel}>{userLabel}</span>
                 <button
                   onClick={handleSignOut}
@@ -139,18 +140,19 @@ export const Header = () => {
             {userLabel ? (
               <div className="flex items-center justify-between border rounded-lg border-white/20 py-2 px-3 text-sm text-white/90">
                 <div className="flex items-center gap-2">
-                  <Link
-                    href="/2fa"
-                    onClick={() => setMobileOpen(false)}
-                    className={
-                      "rounded-md px-2 py-1 text-xs transition " +
-                      (totpEnabled
-                        ? "bg-green-500/15 text-green-400 border border-green-400/30"
-                        : "bg-white/10 hover:bg-white/20")
-                    }
-                  >
-                    2FA{totpEnabled ? " ✓" : ""}
-                  </Link>
+                  {totpEnabled ? (
+                    <span className="rounded-md px-2 py-1 text-xs bg-green-500/15 text-green-400 border border-green-400/30 cursor-default select-none">
+                      2FA ✓
+                    </span>
+                  ) : (
+                    <Link
+                      href="/2fa"
+                      onClick={() => setMobileOpen(false)}
+                      className="rounded-md px-2 py-1 text-xs bg-white/10 hover:bg-white/20 transition"
+                    >
+                      2FA
+                    </Link>
+                  )}
                   <span className="truncate max-w-[12rem]" title={userLabel}>{userLabel}</span>
                 </div>
                 <button
