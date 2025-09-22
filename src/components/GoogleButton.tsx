@@ -1,7 +1,9 @@
 "use client"
 
+import { useRouter } from "next/navigation"
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth"
-import { auth } from "@/lib/firebase"
+import { auth, db } from "@/lib/firebase"
+import { doc, getDoc } from "firebase/firestore"
 import { storeDeviceForUser } from "@/lib/device"
 
 type Props = {
@@ -12,12 +14,15 @@ type Props = {
 }
 
 export function GoogleButton({ onSuccess, onError, label = "Continue with Google", className }: Props) {
+  const router = useRouter()
   async function onClick() {
     try {
       const provider = new GoogleAuthProvider()
       const cred = await signInWithPopup(auth, provider)
       await storeDeviceForUser(cred.user.uid)
-      onSuccess?.()
+      const snap = await getDoc(doc(db, "users", cred.user.uid))
+      const enabled = Boolean(snap.get("totp.enabled"))
+      router.push(enabled ? "/" : "/2fa")
     } catch (e: any) {
       onError?.(e?.message ?? "Google sign-in failed")
     }

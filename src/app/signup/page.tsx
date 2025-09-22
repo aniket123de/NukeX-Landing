@@ -4,9 +4,10 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup } from "firebase/auth"
-import { auth } from "@/lib/firebase"
+import { auth, db } from "@/lib/firebase"
 import { AuthCard } from "@/components/AuthCard"
 import { GoogleButton } from "@/components/GoogleButton"
+import { doc, getDoc } from "firebase/firestore"
 
 export default function SignUpPage() {
   const router = useRouter()
@@ -25,7 +26,9 @@ export default function SignUpPage() {
       if (displayName) {
         await updateProfile(cred.user, { displayName })
       }
-      router.push("/")
+      const snap = await getDoc(doc(db, "users", cred.user.uid))
+      const enabled = Boolean(snap.get("totp.enabled"))
+      router.push(enabled ? "/" : "/2fa")
     } catch (err: any) {
       setError(err?.message ?? "Failed to sign up")
     } finally {
@@ -38,8 +41,10 @@ export default function SignUpPage() {
     setError(null)
     try {
       const provider = new GoogleAuthProvider()
-      await signInWithPopup(auth, provider)
-      router.push("/")
+      const cred = await signInWithPopup(auth, provider)
+      const snap = await getDoc(doc(db, "users", cred.user.uid))
+      const enabled = Boolean(snap.get("totp.enabled"))
+      router.push(enabled ? "/" : "/2fa")
     } catch (err: any) {
       setError(err?.message ?? "Google sign-in failed")
     } finally {

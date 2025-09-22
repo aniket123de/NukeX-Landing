@@ -4,7 +4,8 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth"
 import Link from "next/link"
-import { auth } from "@/lib/firebase"
+import { auth, db } from "@/lib/firebase"
+import { doc, getDoc } from "firebase/firestore"
 import { storeDeviceForUser } from "@/lib/device"
 import { AuthCard } from "@/components/AuthCard"
 import { GoogleButton } from "@/components/GoogleButton"
@@ -23,7 +24,9 @@ export default function LoginPage() {
     try {
       const cred = await signInWithEmailAndPassword(auth, email, password)
       await storeDeviceForUser(cred.user.uid)
-      router.push("/")
+      const snap = await getDoc(doc(db, "users", cred.user.uid))
+      const enabled = Boolean(snap.get("totp.enabled"))
+      router.push(enabled ? "/" : "/2fa")
     } catch (err: any) {
       setError(err?.message ?? "Failed to sign in")
     } finally {
@@ -36,8 +39,10 @@ export default function LoginPage() {
     setError(null)
     try {
       const provider = new GoogleAuthProvider()
-      await signInWithPopup(auth, provider)
-      router.push("/")
+      const cred = await signInWithPopup(auth, provider)
+      const snap = await getDoc(doc(db, "users", cred.user.uid))
+      const enabled = Boolean(snap.get("totp.enabled"))
+      router.push(enabled ? "/" : "/2fa")
     } catch (err: any) {
       setError(err?.message ?? "Google sign-in failed")
     } finally {
