@@ -26,8 +26,9 @@ export const DownloadButton = () => {
     if (fileExists) {
       // Create a link element to trigger the download
       const link = document.createElement('a')
-      link.href = `/${selectedOption.filename}` // File in the root folder
+      link.href = `/${selectedOption.filename}` // File in the public folder
       link.download = selectedOption.filename
+      link.setAttribute('target', '_blank')
       
       // Append to the document, click, and remove
       document.body.appendChild(link)
