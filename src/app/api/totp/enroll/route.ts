@@ -1,14 +1,27 @@
 import { NextRequest, NextResponse } from "next/server"
-import { adminDb } from "@/lib/firebaseAdmin"
 import { authenticator } from "otplib"
 import QRCode from "qrcode"
-import { getAuth } from "firebase-admin/auth"
+
+// Lazy import Firebase Admin to avoid initialization issues during build
+async function getFirebaseAdmin() {
+  try {
+    const { adminDb } = await import("@/lib/firebaseAdmin")
+    const { getAuth } = await import("firebase-admin/auth")
+    return { adminDb, getAuth }
+  } catch (error) {
+    console.error("Firebase Admin import error:", error)
+    throw new Error("Firebase Admin not available")
+  }
+}
 
 export async function POST(req: NextRequest) {
   try {
+    const { adminDb, getAuth } = await getFirebaseAdmin()
+    
     const authz = req.headers.get("authorization") || ""
     const idToken = authz.startsWith("Bearer ") ? authz.slice(7) : ""
     if (!idToken) throw new Error("Missing token")
+    
     const decoded = await getAuth().verifyIdToken(idToken)
     const uid = decoded.uid
 
@@ -31,6 +44,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ qrDataUrl })
   } catch (e: any) {
+    console.error("TOTP enrollment error:", e)
     return NextResponse.json({ error: e?.message ?? "enroll failed" }, { status: 400 })
   }
 }
