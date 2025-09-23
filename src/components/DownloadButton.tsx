@@ -9,22 +9,34 @@ interface DownloadOption {
 }
 
 const downloadOptions: DownloadOption[] = [
-  { os: "Windows", arch: "x64", filename: "nukex-windows-x64.exe" },
-  { os: "Windows", arch: "x86", filename: "nukex-windows-x86.exe" },
-  { os: "macOS", arch: "Intel", filename: "nukex-macos-intel.dmg" },
-  { os: "macOS", arch: "Apple Silicon", filename: "nukex-macos-arm64.dmg" },
-  { os: "Linux", arch: "x64", filename: "nukex-linux-x64.AppImage" },
-  { os: "Linux", arch: "ARM64", filename: "nukex-linux-arm64.AppImage" },
+  { os: "Windows", arch: "x64", filename: "NukeX_Installer.exe" },
+  { os: "macOS", arch: "Intel", filename: "NukeX_Installer.dmg" },
+  { os: "Linux", arch: "x64", filename: "NukeX_Installer.AppImage" },
 ]
 
 export const DownloadButton = () => {
   const [selectedOption, setSelectedOption] = useState(downloadOptions[0])
 
   const handleDownload = () => {
-    // Simulate download
     console.log(`Downloading ${selectedOption.filename}`)
-    // In a real app, you'd trigger the actual download here
-    alert(`Downloading ${selectedOption.filename}`)
+    
+    // Only Windows installer is currently available
+    let fileExists = selectedOption.os === "Windows"
+    
+    if (fileExists) {
+      // Create a link element to trigger the download
+      const link = document.createElement('a')
+      link.href = `/${selectedOption.filename}` // File in the root folder
+      link.download = selectedOption.filename
+      
+      // Append to the document, click, and remove
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    } else {
+      // Show a message for unavailable platforms
+      alert(`${selectedOption.os} version coming soon! Only Windows installer is currently available.`)
+    }
   }
 
   // Prefer Windows installer if user is on Windows; otherwise choose sensible defaults
@@ -33,13 +45,17 @@ export const DownloadButton = () => {
     const ua = window.navigator.userAgent.toLowerCase()
     const isWindows = ua.includes('windows') || ua.includes('win32')
     const isMac = ua.includes('mac os x') || ua.includes('macintosh')
-    const isArm = ua.includes('arm64') || ua.includes('aarch64') || ua.includes('apple silicon')
-    let preferred = downloadOptions[0]
+    
+    let preferred = downloadOptions[0] // Default to Windows as it's the only available installer
     if (isWindows) {
-      preferred = downloadOptions.find(o => o.os === 'Windows' && o.arch === 'x64') || preferred
+      preferred = downloadOptions.find(o => o.os === 'Windows') || preferred
     } else if (isMac) {
-      preferred = downloadOptions.find(o => o.os === 'macOS' && (isArm ? o.arch === 'Apple Silicon' : o.arch === 'Intel')) || preferred
+      preferred = downloadOptions.find(o => o.os === 'macOS') || preferred
+    } else {
+      // Likely Linux or other OS
+      preferred = downloadOptions.find(o => o.os === 'Linux') || preferred
     }
+    
     setSelectedOption(preferred)
   }, [])
 
